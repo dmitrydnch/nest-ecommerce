@@ -5,7 +5,10 @@ import * as winston from 'winston';
 import { configuration } from './config/configuration';
 import { UsersModule } from './users/users.module';
 import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionsFilter } from './http-exception.filter';
+import {
+  AllExceptionsFilter,
+  PrismaExceptionsFilter,
+} from './http-exception.filter';
 import { JsonBodyMiddleware } from './middleware/json-body.middleware';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UrlencodedMiddleware } from './middleware/urlencoded.middleware';
@@ -58,6 +61,10 @@ if (process.env.NODE_ENV === 'test') {
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: PrismaExceptionsFilter,
     },
   ],
 })

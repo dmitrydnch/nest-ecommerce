@@ -26,9 +26,35 @@ export const errorsList = {
     code: 1008,
     status: HttpStatus.UNAUTHORIZED,
   },
+  //Prisma ORM Errors
   error1008: {
-    message: 'User with this email already exists',
+    message: 'Unique constraint failed on the ',
     code: 1009,
+    status: HttpStatus.CONFLICT,
+  },
+  error1009: {
+    message: 'ClientKnownRequestError',
+    code: 1009,
+    status: HttpStatus.CONFLICT,
+  },
+  error1010: {
+    message: 'ClientUnknownRequestError',
+    code: 1010,
+    status: HttpStatus.CONFLICT,
+  },
+  error1011: {
+    message: 'ClientRustPanicError',
+    code: 1011,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+  error1012: {
+    message: 'ClientInitializationError',
+    code: 1012,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+  error1013: {
+    message: 'ClientValidationError',
+    code: 1013,
     status: HttpStatus.CONFLICT,
   },
 };

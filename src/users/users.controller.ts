@@ -77,11 +77,6 @@ export class UsersController {
       const responseBody = this.responseBuilderService.sendSuccess(user);
       return res.status(HttpStatus.CREATED).json(responseBody);
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        if (err.code === 'P2002') {
-          throw Error('1008');
-        }
-      }
       console.log(`Error: ${err}`);
       throw err;
     }
