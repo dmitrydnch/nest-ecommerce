@@ -30,7 +30,10 @@ import * as bcrypt from 'bcryptjs';
 import { exclude } from '../prisma/prisma.functions';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Prisma } from '@prisma/client';
+import {
+  notfoundResponse,
+  unauthroziedResponse,
+} from '../config/swagger-responses';
 
 @ApiTags('Users')
 @Controller('users')
@@ -63,7 +66,21 @@ export class UsersController {
       },
     },
   })
-  @ApiConflictResponse({ description: 'User with this email already exists' })
+  @ApiConflictResponse({
+    description: 'User with this email already exists',
+    content: {
+      'application/json': {
+        example: {
+          result: false,
+          error: {
+            message: 'Unique constraint failed on the email',
+            code: 1008,
+          },
+          data: {},
+        },
+      },
+    },
+  })
   @Post('registration')
   public async registration(
     @Req() req: Request,
@@ -86,7 +103,35 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'Fetch all users',
+    content: {
+      'application/json': {
+        example: {
+          result: true,
+          error: {
+            message: '',
+            code: 0,
+          },
+          data: [
+            {
+              id: 4,
+              email: 'user@gmail.com',
+              fullname: 'Tom Cruise',
+              birth: '07-03-1962',
+              verified: false,
+            },
+            {
+              id: 5,
+              email: 'some.user@mail.com',
+              fullname: 'Tom Holland',
+              birth: '06-01-1996',
+              verified: false,
+            },
+          ],
+        },
+      },
+    },
   })
+  @ApiUnauthorizedResponse(unauthroziedResponse)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -126,7 +171,7 @@ export class UsersController {
       },
     },
   })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiUnauthorizedResponse(unauthroziedResponse)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('me')
@@ -170,7 +215,7 @@ export class UsersController {
   })
   @ApiConflictResponse({ description: 'Activation link incorrect' })
   @ApiConflictResponse({ description: 'User already verefied' })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiUnauthorizedResponse(unauthroziedResponse)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('verify/:activationLink')
@@ -220,14 +265,7 @@ export class UsersController {
       },
     },
   })
-  @ApiResponse({
-    status: 400,
-    description: 'Cast to ObjectId failed',
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
+  @ApiUnauthorizedResponse(unauthroziedResponse)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Put('me')
@@ -281,9 +319,8 @@ export class UsersController {
       },
     },
   })
-  @ApiNotFoundResponse({
-    description: 'User not found',
-  })
+  @ApiUnauthorizedResponse(unauthroziedResponse)
+  @ApiNotFoundResponse(notfoundResponse)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get(':id')

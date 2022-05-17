@@ -11,11 +11,6 @@ export const errorsList = {
     code: 1001,
     status: HttpStatus.BAD_REQUEST,
   },
-  error1002: {
-    message: 'Prisma error',
-    code: 1002,
-    status: HttpStatus.BAD_GATEWAY,
-  },
   error1006: {
     message: 'Bad Request',
     code: 1011,
@@ -42,9 +37,9 @@ export const errorsList = {
     code: 1010,
     status: HttpStatus.CONFLICT,
   },
-  error1011: {
+  error1014: {
     message: 'ClientRustPanicError',
-    code: 1011,
+    code: 1014,
     status: HttpStatus.INTERNAL_SERVER_ERROR,
   },
   error1012: {

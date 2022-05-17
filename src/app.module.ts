@@ -2,7 +2,6 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import * as winston from 'winston';
-import { configuration } from './config/configuration';
 import { UsersModule } from './users/users.module';
 import { APP_FILTER } from '@nestjs/core';
 import {

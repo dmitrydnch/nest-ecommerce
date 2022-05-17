@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,6 +7,7 @@ import {
   Post,
   Request,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -14,12 +16,17 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { AuthService } from './auth.service';
 import { ResponseBuilderService } from '../responseBuilder/responseBuilder.service';
 import { UsersService } from '../users/users.service';
+import {
+  newTokensCreatedResponse,
+  unauthroziedResponse,
+} from '../config/swagger-responses';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -31,31 +38,8 @@ export class AuthController {
   ) {}
 
   @ApiOperation({ summary: 'Email and password login user' })
-  @ApiResponse({
-    status: 200,
-    description: 'New tokens successfully created.',
-    content: {
-      'application/json': {
-        example: {
-          result: true,
-          error: {
-            message: '',
-            code: 0,
-          },
-          data: {
-            access_token:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjUyNzQ1NjE2LCJleHAiOjE2NTI3NDYyMTZ9.3Lx9D-esVNV7JbhOTGWFOMbIHDUNuQunaepotFcnkOM',
-            refresh_token:
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTI3NDU2MTYsImV4cCI6MTY1MzM1MDQxNn0.9vGFDWczHZLVHwrmjW4gr9VTUT9BFLXtqstuh8EWbd4',
-          },
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
+  @ApiResponse(newTokensCreatedResponse)
+  @ApiUnauthorizedResponse(unauthroziedResponse)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   public async login(
@@ -83,14 +67,24 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'New token successfully refreshed.',
+    content: newTokensCreatedResponse.content,
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-  })
+  @ApiUnauthorizedResponse(unauthroziedResponse)
   @ApiResponse({
     status: 400,
     description: 'Bad Request',
+    content: {
+      'application/json': {
+        example: {
+          result: false,
+          error: {
+            message: 'The next error was caught: RefreshToken required',
+            code: 1000,
+          },
+          data: {},
+        },
+      },
+    },
   })
   @ApiBearerAuth()
   @Post('refresh')
@@ -100,6 +94,9 @@ export class AuthController {
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<any> {
     try {
+      if (!refreshTokenDto.refreshToken) {
+        throw new BadRequestException('RefreshToken required');
+      }
       const userUpdated = await this.authService.refreshToken(
         req,
         refreshTokenDto,
@@ -107,6 +104,9 @@ export class AuthController {
       const responseBody = this.responseBuilderService.sendSuccess(userUpdated);
       return res.status(HttpStatus.OK).json(responseBody);
     } catch (err) {
+      if (err.name === 'JsonWebTokenError') {
+        throw new UnauthorizedException();
+      }
       console.log(err);
       throw err;
     }

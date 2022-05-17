@@ -12,6 +12,7 @@ export const configuration = {
   },
   jwt: {
     jwtSecret: process.env.JWT_SECRET || 'localhost-secret',
-    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'localhost-secret',
+    jwtRefreshSecret:
+      process.env.JWT_REFRESH_SECRET || 'localhost-refresh-secret',
   },
 };

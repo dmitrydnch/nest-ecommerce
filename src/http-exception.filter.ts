@@ -98,7 +98,7 @@ export class PrismaExceptionsFilter implements ExceptionFilter {
   private clientRustPanicError(): any {
     switch (this.exception.code) {
       default:
-        this.responseMessage(errorsList.error1011.message, 1011);
+        this.responseMessage(errorsList.error1014.message, 1014);
         break;
     }
   }
