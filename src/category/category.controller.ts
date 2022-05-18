@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiResponse,
@@ -68,12 +67,10 @@ export class CategoryController {
     @Body() createCategoryDto: CreateCategoryDto,
   ): Promise<any> {
     try {
-      const { user } = req;
-
       const category = await this.categoryService.create(createCategoryDto);
-
-      const responseBody = this.responseBuilderService.sendSuccess(category);
-      return res.status(HttpStatus.CREATED).json(responseBody);
+      return res
+        .status(HttpStatus.CREATED)
+        .json(this.responseBuilderService.sendSuccess(category));
     } catch (err) {
       console.log(err);
       throw err;
@@ -128,9 +125,9 @@ export class CategoryController {
   public async list(@Request() req, @Res() res): Promise<any> {
     try {
       const categories = await this.categoryService.findAll();
-
-      const responseBody = this.responseBuilderService.sendSuccess(categories);
-      return res.status(HttpStatus.CREATED).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(categories));
     } catch (err) {
       console.log(err);
       throw err;
@@ -165,20 +162,18 @@ export class CategoryController {
   public async delete(
     @Request() req,
     @Res() res,
-    @Param('id') categoryId: number,
+    @Param('id') categoryId: string,
   ): Promise<any> {
     try {
-      const { user } = req;
-
       const categorySearch = await this.categoryService.findById(+categoryId);
       if (!categorySearch) {
         throw new NotFoundException('Category not found');
       }
 
       const category = await this.categoryService.delete(+categoryId);
-
-      const responseBody = this.responseBuilderService.sendSuccess(category);
-      return res.status(HttpStatus.CREATED).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(category));
     } catch (err) {
       console.log(err);
       throw err;

@@ -90,7 +90,7 @@ export class FavouriteController {
   public async create(
     @Request() req,
     @Res() res,
-    @Param('productId') productId: number,
+    @Param('productId') productId: string,
   ): Promise<any> {
     try {
       const { user } = req;
@@ -100,13 +100,12 @@ export class FavouriteController {
         throw new NotFoundException('Product not found');
       }
 
-      const userFavourites = await this.favouriteService.findAllByUserId(
-        user.id,
-      );
-      const searchFavourite = userFavourites.filter(
-        (item) => item.productId === +productId,
-      );
-      if (searchFavourite.length > 0) {
+      const userFavourites =
+        await this.favouriteService.findAllByUserIdAndProductId(
+          user.id,
+          +productId,
+        );
+      if (userFavourites) {
         throw new ConflictException(
           'You already added this product to favourite list',
         );
@@ -172,9 +171,9 @@ export class FavouriteController {
       const userFavourites = await this.favouriteService.findAllByUserId(
         user.id,
       );
-      const responseBody =
-        this.responseBuilderService.sendSuccess(userFavourites);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(userFavourites));
     } catch (err) {
       console.log(err);
       throw err;
@@ -208,24 +207,24 @@ export class FavouriteController {
   public async delete(
     @Request() req,
     @Res() res,
-    @Param('productId') productId: number,
+    @Param('productId') productId: string,
   ): Promise<any> {
     try {
       const { user } = req;
-      const userFavourites = await this.favouriteService.findAllByUserId(
-        user.id,
-      );
+      const userFavourites =
+        await this.favouriteService.findAllByUserIdAndProductId(
+          user.id,
+          +productId,
+        );
 
-      const searchFavourite = userFavourites.filter(
-        (item) => item.productId === +productId,
-      );
-      if (searchFavourite.length === 0) {
+      if (!userFavourites) {
         throw new NotFoundException('Favourite product not found');
       }
 
       const favourite = await this.favouriteService.delete(user.id, +productId);
-      const responseBody = this.responseBuilderService.sendSuccess(favourite);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(favourite));
     } catch (err) {
       console.log(err);
       throw err;

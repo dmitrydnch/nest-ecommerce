@@ -103,8 +103,9 @@ export class AuthController {
         req,
         refreshTokenDto,
       );
-      const responseBody = this.responseBuilderService.sendSuccess(userUpdated);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(userUpdated));
     } catch (err) {
       if (err.name === 'JsonWebTokenError') {
         throw new UnauthorizedException();

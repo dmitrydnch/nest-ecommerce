@@ -13,6 +13,7 @@ describe('FavouriteService', () => {
   });
 
   it('should be defined', () => {
+    console.log(service.findAllByUserIdAndProductId(1, 1));
     expect(service).toBeDefined();
   });
 });

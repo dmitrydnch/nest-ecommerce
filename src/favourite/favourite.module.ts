@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FavouriteController } from './favourite.controller';
 import { FavouriteService } from './favourite.service';
 import { ResponseBuilderModule } from '../responseBuilder/responseBuilder.module';
@@ -9,10 +9,11 @@ import { PrismaModule } from '../prisma/prisma.module';
   imports: [
     ResponseBuilderModule,
     FavouriteModule,
-    ProductModule,
+    forwardRef(() => ProductModule),
     PrismaModule,
   ],
   controllers: [FavouriteController],
   providers: [FavouriteService],
+  exports: [FavouriteService],
 })
 export class FavouriteModule {}

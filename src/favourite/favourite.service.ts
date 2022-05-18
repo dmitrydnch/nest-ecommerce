@@ -25,6 +25,21 @@ export class FavouriteService {
     });
   }
 
+  public findAllByUserIdAndProductId(userId: number, productId: number) {
+    return this.prisma.favourites.findFirst({
+      where: {
+        userId,
+        productId,
+      },
+    });
+  }
+
+  public deleteAllByProductId(productId: number) {
+    return this.prisma.favourites.deleteMany({
+      where: { productId },
+    });
+  }
+
   public delete(userId: number, productId: number) {
     return this.prisma.favourites.deleteMany({
       where: { userId: userId, productId: productId },

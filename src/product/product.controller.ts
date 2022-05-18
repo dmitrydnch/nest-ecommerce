@@ -30,6 +30,7 @@ import { ProductService } from './product.service';
 import { ResponseBuilderService } from '../responseBuilder/responseBuilder.service';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CategoryService } from '../category/category.service';
+import { FavouriteService } from '../favourite/favourite.service';
 
 @ApiTags('Product')
 @Controller('product')
@@ -38,6 +39,7 @@ export class ProductController {
     private readonly responseBuilderService: ResponseBuilderService,
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
+    private readonly favouriteService: FavouriteService,
   ) {}
 
   @ApiOperation({ summary: 'Create product' })
@@ -81,8 +83,9 @@ export class ProductController {
       }
 
       const product = await this.productService.create(createProductDto);
-      const responseBody = this.responseBuilderService.sendSuccess(product);
-      return res.status(HttpStatus.CREATED).json(responseBody);
+      return res
+        .status(HttpStatus.CREATED)
+        .json(this.responseBuilderService.sendSuccess(product));
     } catch (err) {
       console.log(err);
       throw err;
@@ -128,8 +131,9 @@ export class ProductController {
       if (!product) {
         throw new NotFoundException('Product not found');
       }
-      const responseBody = this.responseBuilderService.sendSuccess(product);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(product));
     } catch (err) {
       console.log(err);
       throw err;
@@ -179,8 +183,9 @@ export class ProductController {
   public async list(@Request() req, @Res() res): Promise<any> {
     try {
       const product = await this.productService.findAll();
-      const responseBody = this.responseBuilderService.sendSuccess(product);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(product));
     } catch (err) {
       console.log(err);
       throw err;
@@ -224,7 +229,7 @@ export class ProductController {
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<any> {
     try {
-      const searchProduct = await this.productService.findById(+productId);
+      const searchProduct = await this.productService.findById(productId);
       if (!searchProduct) {
         throw new NotFoundException();
       }
@@ -233,8 +238,9 @@ export class ProductController {
         +productId,
         updateProductDto,
       );
-      const responseBody = this.responseBuilderService.sendSuccess(product);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(product));
     } catch (err) {
       console.log(err);
       throw err;
@@ -271,7 +277,7 @@ export class ProductController {
   public async delete(
     @Request() req,
     @Res() res,
-    @Param('id') productId: number,
+    @Param('id') productId: string,
   ): Promise<any> {
     try {
       const searchProduct = await this.productService.findById(+productId);
@@ -279,9 +285,11 @@ export class ProductController {
         throw new NotFoundException();
       }
 
+      await this.favouriteService.deleteAllByProductId(+productId);
       const product = await this.productService.delete(+productId);
-      const responseBody = this.responseBuilderService.sendSuccess(product);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(product));
     } catch (err) {
       console.log(err);
       throw err;

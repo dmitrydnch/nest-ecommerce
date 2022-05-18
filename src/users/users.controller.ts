@@ -138,8 +138,9 @@ export class UsersController {
   public async all(@Res() res: Response): Promise<Response> {
     try {
       const users = await this.usersService.findAll();
-      const responseBody = this.responseBuilderService.sendSuccess(users);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(users));
     } catch (err) {
       console.log(`Error: ${err}`);
       throw err;
@@ -214,7 +215,7 @@ export class UsersController {
     },
   })
   @ApiConflictResponse({ description: 'Activation link incorrect' })
-  @ApiConflictResponse({ description: 'User already verefied' })
+  @ApiConflictResponse({ description: 'User already verified' })
   @ApiUnauthorizedResponse(unauthroziedResponse)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -227,15 +228,16 @@ export class UsersController {
     try {
       const { user }: any = req;
       if (user.verified) {
-        throw new HttpException('User already verefied', 409);
+        throw new HttpException('User already verified', 409);
       }
       if (activationLink !== user.activationLink) {
         throw new HttpException('Activation link incorrect', 409);
       }
 
       const updatedUser = await this.usersService.verify(user.id);
-      const responseBody = this.responseBuilderService.sendSuccess(updatedUser);
-      return res.status(HttpStatus.OK).json(responseBody);
+      return res
+        .status(HttpStatus.OK)
+        .json(this.responseBuilderService.sendSuccess(updatedUser));
     } catch (err) {
       console.log(`Error: ${err}`);
       throw err;
