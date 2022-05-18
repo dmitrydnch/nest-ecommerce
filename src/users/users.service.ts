@@ -22,11 +22,16 @@ export class UsersService {
   }
 
   public findById(id: number): Promise<any> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: { Favourites: true },
+    });
   }
 
   public findByEmail(email: string): Promise<any> {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
   }
 
   public findByIdAndRefreshToken(id: number, refreshToken: string) {

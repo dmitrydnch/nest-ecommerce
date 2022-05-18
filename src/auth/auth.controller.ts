@@ -27,6 +27,7 @@ import {
   newTokensCreatedResponse,
   unauthroziedResponse,
 } from '../config/swagger-responses';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -87,6 +88,7 @@ export class AuthController {
     },
   })
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post('refresh')
   public async refresh(
     @Request() req,

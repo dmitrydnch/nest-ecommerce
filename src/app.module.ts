@@ -15,6 +15,9 @@ import { ResponseBuilderModule } from './responseBuilder/responseBuilder.module'
 import { WinstonModule } from 'nest-winston';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { ProductModule } from './product/product.module';
+import { FavouriteModule } from './favourite/favourite.module';
+import { CategoryModule } from './category/category.module';
 
 const myFormat = winston.format.printf(({ level, message, timestamp }) => {
   return `${timestamp} ${level}: ${JSON.stringify(message)}`;
@@ -53,6 +56,9 @@ if (process.env.NODE_ENV === 'test') {
     UsersModule,
     ResponseBuilderModule,
     PrismaModule,
+    ProductModule,
+    FavouriteModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [

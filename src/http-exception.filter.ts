@@ -73,6 +73,9 @@ export class PrismaExceptionsFilter implements ExceptionFilter {
         const message = errorsList.error1008.message + targets;
         this.responseMessage(message, 1008);
         break;
+      case 'P2025':
+        this.responseMessage('Record not found', 1001);
+        break;
       default:
         this.responseMessage(errorsList.error1009.message, 1009);
         break;
